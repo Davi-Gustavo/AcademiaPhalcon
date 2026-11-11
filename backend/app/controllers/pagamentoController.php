@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use Phalcon\Mvc\Controller;
 use App\Models\Pagamento;
+use App\Models\Matricula;
+use App\Models\Plano;
 
 class PagamentoController extends Controller
 {
@@ -74,6 +76,74 @@ class PagamentoController extends Controller
             }
         } else {
             echo "Pagamento não encontrado!";
+        }
+    }
+
+    public function pendentesAction()
+    {
+        $hoje = date('Y-m-d');
+
+        $pagamentos = Pagamento::find([
+            'conditions' => 'data_vencimento < :hoje:',
+            'bind' => [
+                'hoje' => $hoje
+            ]
+        ]);
+
+        foreach ($pagamentos as $pagamento) {
+            echo "Matrícula: " . $pagamento->matricula_id .
+                " - Vencimento: " . $pagamento->data_vencimento .
+                " - Situação: Vencida<br>";
+        }
+    }
+
+    public function mensalidadesPendentesAction()
+    {
+        $matriculas = Matricula::find();
+
+        $hoje = date('Y-m-d');
+
+        foreach ($matriculas as $matricula) {
+
+            if ($matricula->status != 'ATIVA') {
+                continue;
+            }
+
+            $plano = Plano::findFirst($matricula->plano_id);
+
+            if ($plano) {
+
+                $limite = $hoje;
+
+                if (!empty($matricula->data_fim) && $matricula->data_fim < $limite) {
+                    $limite = $matricula->data_fim;
+                }
+
+                $dataVencimento = $matricula->data_inicio;
+
+                while ($dataVencimento <= $limite) {
+
+                    $pagamento = Pagamento::findFirst([
+                        'conditions' => 'matricula_id = :matricula: AND data_vencimento = :vencimento:',
+                        'bind' => [
+                            'matricula' => $matricula->id,
+                            'vencimento' => $dataVencimento
+                        ]
+                    ]);
+
+                    if (!$pagamento) {
+                        echo "Matrícula: " . $matricula->id .
+                            " - Vencimento: " . $dataVencimento .
+                            " - Valor: R$ " . $plano->valor .
+                            " - Situação: Pendente<br>";
+                    }
+
+                    $dataVencimento = date(
+                        'Y-m-d',
+                        strtotime($dataVencimento . ' +1 month')
+                    );
+                }
+            }
         }
     }
 }

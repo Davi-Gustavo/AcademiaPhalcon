@@ -14,7 +14,8 @@ class MatriculaController extends Controller
         foreach ($matriculas as $matricula) {
             echo "Aluno: " . $matricula->aluno_id .
                  " - Plano: " . $matricula->plano_id .
-                 " - Data: " . $matricula->data_inicio .
+                 " - Início: " . $matricula->data_inicio .
+                 " - Fim: " . $matricula->data_fim .
                  " - Status: " . $matricula->status . "<br>";
         }
     }
@@ -28,7 +29,8 @@ class MatriculaController extends Controller
         $matricula->aluno_id = $dados->aluno_id;
         $matricula->plano_id = $dados->plano_id;
         $matricula->data_inicio = $dados->data_inicio;
-        $matricula->status = $dados->status;
+        $matricula->data_fim = $dados->data_fim;
+        $matricula->status = 'ATIVA';
 
         if ($matricula->save()) {
             echo "Matrícula cadastrada com sucesso!";
@@ -47,7 +49,7 @@ class MatriculaController extends Controller
             $matricula->aluno_id = $dados->aluno_id;
             $matricula->plano_id = $dados->plano_id;
             $matricula->data_inicio = $dados->data_inicio;
-            $matricula->status = $dados->status;
+            $matricula->data_fim = $dados->data_fim;
 
             if ($matricula->save()) {
                 echo "Matrícula atualizada com sucesso!";
@@ -69,6 +71,25 @@ class MatriculaController extends Controller
             } else {
                 echo "Erro ao excluir matrícula!";
             }
+        } else {
+            echo "Matrícula não encontrada!";
+        }
+    }
+
+    public function cancelarAction($id)
+    {
+        $matricula = Matricula::findFirst($id);
+
+        if ($matricula) {
+
+            $matricula->status = 'CANCELADA';
+
+            if ($matricula->save()) {
+                echo "Matrícula cancelada com sucesso!";
+            } else {
+                echo "Erro ao cancelar matrícula!";
+            }
+
         } else {
             echo "Matrícula não encontrada!";
         }

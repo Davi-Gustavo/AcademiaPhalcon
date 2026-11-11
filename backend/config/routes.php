@@ -1,10 +1,12 @@
+
 <?php
 
 use Phalcon\Mvc\Router;
 
 $router = new Router(false);
 
-#CRUD DE ALUNOS COMPLETO
+// CRUD DE ALUNOS
+
 $router->addGet('/', [
     'namespace' => 'App\Controllers',
     'controller' => 'index',
@@ -35,7 +37,7 @@ $router->addDelete('/alunos/{id}', [
     'action' => 'excluir'
 ]);
 
-#CRUD DE PLANOS
+// CRUD DE PLANOS
 
 $router->addGet('/planos', [
     'namespace' => 'App\Controllers',
@@ -61,7 +63,7 @@ $router->addDelete('/planos/{id}', [
     'action' => 'excluir'
 ]);
 
-#CRUD DE MATRICULAS
+// CRUD DE MATRICULAS
 
 $router->addGet('/matriculas', [
     'namespace' => 'App\Controllers',
@@ -87,7 +89,13 @@ $router->addDelete('/matriculas/{id}', [
     'action' => 'excluir'
 ]);
 
-#CRUD DE PAGAMENTOS
+$router->addPut('/matriculas/{id}/cancelar', [
+    'namespace' => 'App\Controllers',
+    'controller' => 'matricula',
+    'action' => 'cancelar'
+]);
+
+// CRUD DE PAGAMENTOS
 
 $router->addGet('/pagamentos', [
     'namespace' => 'App\Controllers',
@@ -113,7 +121,23 @@ $router->addDelete('/pagamentos/{id}', [
     'action' => 'excluir'
 ]);
 
-#ROTAS DE USUARIOS
+// PAGAMENTOS VENCIDOS
+
+$router->addGet('/pagamentos/pendentes', [
+    'namespace' => 'App\Controllers',
+    'controller' => 'pagamento',
+    'action' => 'pendentes'
+]);
+
+// MENSALIDADES PENDENTES
+
+$router->addGet('/pagamentos/mensalidades-pendentes', [
+    'namespace' => 'App\Controllers',
+    'controller' => 'pagamento',
+    'action' => 'mensalidadesPendentes'
+]);
+
+// ROTAS DE USUARIOS
 
 $router->addPost('/usuarios/cadastrar', [
     'namespace' => 'App\Controllers',
