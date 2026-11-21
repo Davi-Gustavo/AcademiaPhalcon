@@ -1,0 +1,44 @@
+
+function ExcluirPlano({ plano, atualizar }) {
+
+  async function excluir() {
+
+    const confirmar = window.confirm(
+      `Deseja realmente excluir o plano ${plano.nome}?`
+    );
+
+    if (!confirmar) {
+      return;
+    }
+
+    try {
+      const resposta = await fetch(
+        `http://localhost:8000/planos/${plano.id}`,
+        {
+          method: "DELETE"
+        }
+      );
+
+      const mensagem = await resposta.text();
+
+      if (mensagem.toLowerCase().includes("sucesso")) {
+        alert("Plano excluído com sucesso!");
+        atualizar();
+      } else {
+        alert(mensagem || "Erro ao excluir plano!");
+      }
+
+    } catch (error) {
+      console.error(error);
+      alert("Erro ao conectar com o servidor!");
+    }
+  }
+
+  return (
+    <button type="button" onClick={excluir}>
+      Excluir
+    </button>
+  );
+}
+
+export default ExcluirPlano;

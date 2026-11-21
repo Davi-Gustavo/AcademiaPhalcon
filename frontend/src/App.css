@@ -1,0 +1,351 @@
+
+/* Estrutura principal */
+.layout-academia {
+  min-height: 100vh;
+  background-color: #111315;
+  color: #e5e7eb;
+}
+
+/* Menu */
+.menu-academia {
+  display: flex;
+  align-items: center;
+  gap: 30px;
+  padding: 22px 35px;
+  background-color: #1c1f22;
+  border-bottom: 1px solid #303438;
+}
+
+.menu-academia a {
+  color: #22c55e;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+.menu-academia a:hover {
+  color: white;
+}
+
+.menu-academia button {
+  margin-left: auto;
+  padding: 9px 20px;
+  background-color: #292e32;
+  color: #ef4444;
+  border: 1px solid #3b4248;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.conteudo-academia {
+  padding: 30px;
+}
+
+/* Tela de login */
+.pagina-login {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #111315;
+  color: #e5e7eb;
+  padding: 20px;
+}
+
+.caixa-login {
+  width: 100%;
+  max-width: 420px;
+  padding: 35px;
+  background-color: #1c1f22;
+  border: 1px solid #303438;
+  border-radius: 12px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+}
+
+.caixa-login h1 {
+  color: #22c55e;
+  text-align: center;
+  margin-bottom: 8px;
+}
+
+.subtitulo,
+.descricao {
+  color: #9ca3af;
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.caixa-login h2 {
+  margin-bottom: 8px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.campo input {
+  padding: 12px;
+  background-color: #292e32;
+  border: 1px solid #3b4248;
+  border-radius: 6px;
+  color: white;
+  outline: none;
+}
+
+.campo input:focus {
+  border-color: #22c55e;
+}
+
+.caixa-login button {
+  width: 100%;
+  padding: 12px;
+  background-color: #22c55e;
+  color: #111315;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.caixa-login button:hover {
+  background-color: #16a34a;
+}
+
+.texto-alternativo {
+  text-align: center;
+  margin-top: 20px;
+  color: #9ca3af;
+}
+
+.texto-alternativo a {
+  color: #22c55e;
+  text-decoration: none;
+}
+
+.mensagem-erro {
+  color: #ef4444;
+  margin-bottom: 15px;
+}
+
+@media (max-width: 700px) {
+  .menu-academia {
+    flex-wrap: wrap;
+    gap: 18px;
+    padding: 20px;
+  }
+
+  .menu-academia button {
+    margin-left: 0;
+  }
+}
+.conteudo-academia h1 {
+  color: #f3f4f6;
+  margin-bottom: 12px;
+}
+
+.conteudo-academia h2 {
+  color: #f3f4f6;
+  margin: 25px 0 10px;
+}
+
+.conteudo-academia h3 {
+  color: #22c55e;
+  margin-bottom: 12px;
+}
+
+.descricao {
+  color: #9ca3af;
+  margin-bottom: 25px;
+}
+
+/* Botões */
+
+.conteudo-academia button {
+  padding: 11px 18px;
+  background-color: #22c55e;
+  color: #111315;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  margin: 8px 5px 8px 0;
+}
+
+.conteudo-academia button:hover {
+  background-color: #16a34a;
+}
+
+/* Formulários */
+
+.conteudo-academia form {
+  max-width: 550px;
+  margin: 20px 0;
+  padding: 25px;
+  background-color: #1c1f22;
+  border: 1px solid #303438;
+  border-radius: 10px;
+}
+
+.conteudo-academia input,
+.conteudo-academia select,
+.conteudo-academia textarea {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0 16px;
+  background-color: #292e32;
+  color: white;
+  border: 1px solid #3b4248;
+  border-radius: 6px;
+}
+
+.conteudo-academia label {
+  color: #e5e7eb;
+}
+
+/* Cartões das listagens */
+
+.card-item,
+.caixa-aluno {
+  max-width: 650px;
+  margin: 15px 0;
+  padding: 20px;
+  background-color: #1c1f22;
+  border: 1px solid #303438;
+  border-radius: 8px;
+  color: #e5e7eb;
+}
+
+.card-item p,
+.caixa-aluno p {
+  margin: 8px 0;
+}
+
+.mensagem-erro {
+  color: #ef4444;
+  margin: 12px 0;
+}
+
+
+
+.conteudo-academia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.conteudo-academia form {
+  width: 100%;
+  max-width: 550px;
+  margin: 20px auto;
+  text-align: left;
+}
+
+.card-item,
+.caixa-aluno {
+  width: 100%;
+  max-width: 650px;
+  margin: 15px auto;
+  text-align: left;
+}
+
+.conteudo-academia .descricao {
+  text-align: center;
+}
+
+
+.conteudo-academia > button {
+  margin: 15px auto;
+}
+
+.dashboard {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.dashboard-cabecalho {
+  margin-bottom: 30px;
+}
+
+.dashboard-cabecalho h1 {
+  margin-bottom: 10px;
+}
+
+.dashboard-cabecalho p {
+  color: #9ca3af;
+  margin-top: 8px;
+}
+
+.dashboard-cards {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+
+.dashboard-card {
+  background-color: #1c1f22;
+  border: 1px solid #303438;
+  border-radius: 10px;
+  padding: 25px;
+}
+
+.dashboard-card h3 {
+  color: #9ca3af;
+  font-size: 15px;
+  margin-bottom: 15px;
+}
+
+.dashboard-card h2 {
+  color: #22c55e;
+  font-size: 28px;
+  margin: 0;
+}
+
+.dashboard-lista {
+  width: 100%;
+  margin-top: 35px;
+  background-color: #1c1f22;
+  border: 1px solid #303438;
+  border-radius: 10px;
+  padding: 25px;
+}
+
+.dashboard-lista h2 {
+  margin: 0 0 20px;
+}
+
+.dashboard-pagamento {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  padding: 18px 0;
+  border-bottom: 1px solid #303438;
+}
+
+.dashboard-pagamento:last-child {
+  border-bottom: none;
+}
+
+.dashboard-pagamento p {
+  color: #9ca3af;
+  margin-top: 7px;
+  font-size: 13px;
+}
+
+.dashboard-pagamento strong:last-child {
+  color: #22c55e;
+}
+
+@media (max-width: 600px) {
+  .dashboard-cards {
+    grid-template-columns: 1fr;
+  }
+}

@@ -121,7 +121,7 @@ $router->addDelete('/pagamentos/{id}', [
     'action' => 'excluir'
 ]);
 
-// PAGAMENTOS VENCIDOS
+// PAGAMENTOS PENDENTES
 
 $router->addGet('/pagamentos/pendentes', [
     'namespace' => 'App\Controllers',
@@ -129,12 +129,36 @@ $router->addGet('/pagamentos/pendentes', [
     'action' => 'pendentes'
 ]);
 
-// MENSALIDADES PENDENTES
-
 $router->addGet('/pagamentos/mensalidades-pendentes', [
     'namespace' => 'App\Controllers',
     'controller' => 'pagamento',
     'action' => 'mensalidadesPendentes'
+]);
+
+// CRUD DE FUNCIONARIOS
+
+$router->addGet('/funcionarios', [
+    'namespace' => 'App\Controllers',
+    'controller' => 'funcionario',
+    'action' => 'index'
+]);
+
+$router->addPost('/funcionarios', [
+    'namespace' => 'App\Controllers',
+    'controller' => 'funcionario',
+    'action' => 'cadastrar'
+]);
+
+$router->addPut('/funcionarios/{id}', [
+    'namespace' => 'App\Controllers',
+    'controller' => 'funcionario',
+    'action' => 'editar'
+]);
+
+$router->addDelete('/funcionarios/{id}', [
+    'namespace' => 'App\Controllers',
+    'controller' => 'funcionario',
+    'action' => 'excluir'
 ]);
 
 // ROTAS DE USUARIOS

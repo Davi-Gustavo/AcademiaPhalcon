@@ -13,18 +13,56 @@ class PagamentoController extends Controller
     {
         $pagamentos = Pagamento::find();
 
+        $lista = [];
+
         foreach ($pagamentos as $pagamento) {
-            echo "Matrícula: " . $pagamento->matricula_id .
-                 " - Valor: R$ " . $pagamento->valor .
-                 " - Data: " . $pagamento->data_pagamento .
-                 " - Vencimento: " . $pagamento->data_vencimento .
-                 " - Forma: " . $pagamento->forma_pagamento . "<br>";
+            $lista[] = [
+                'id' => $pagamento->id,
+                'matricula_id' => $pagamento->matricula_id,
+                'valor' => $pagamento->valor,
+                'data_pagamento' => $pagamento->data_pagamento,
+                'data_vencimento' => $pagamento->data_vencimento,
+                'forma_pagamento' => $pagamento->forma_pagamento
+            ];
         }
+
+        return $this->response
+            ->setContentType('application/json', 'UTF-8')
+            ->setJsonContent($lista);
     }
 
     public function cadastrarAction()
     {
         $dados = $this->request->getJsonRawBody();
+
+        if (
+            !$dados ||
+            empty($dados->matricula_id) ||
+            !isset($dados->valor) ||
+            empty($dados->data_pagamento) ||
+            empty($dados->data_vencimento) ||
+            empty($dados->forma_pagamento)
+        ) {
+            echo "Preencha todos os campos!";
+            return;
+        }
+
+        if (!is_numeric($dados->valor) || $dados->valor <= 0) {
+            echo "O valor deve ser maior que zero!";
+            return;
+        }
+
+        $matricula = Matricula::findFirst($dados->matricula_id);
+
+        if (!$matricula) {
+            echo "Matrícula não encontrada!";
+            return;
+        }
+
+        if ($matricula->status != 'ATIVA') {
+            echo "Não é possível cadastrar pagamento para uma matrícula cancelada!";
+            return;
+        }
 
         $pagamento = new Pagamento();
 
@@ -47,6 +85,30 @@ class PagamentoController extends Controller
 
         if ($pagamento) {
             $dados = $this->request->getJsonRawBody();
+
+            if (
+                !$dados ||
+                empty($dados->matricula_id) ||
+                !isset($dados->valor) ||
+                empty($dados->data_pagamento) ||
+                empty($dados->data_vencimento) ||
+                empty($dados->forma_pagamento)
+            ) {
+                echo "Preencha todos os campos!";
+                return;
+            }
+
+            if (!is_numeric($dados->valor) || $dados->valor <= 0) {
+                echo "O valor deve ser maior que zero!";
+                return;
+            }
+
+            $matricula = Matricula::findFirst($dados->matricula_id);
+
+            if (!$matricula) {
+                echo "Matrícula não encontrada!";
+                return;
+            }
 
             $pagamento->matricula_id = $dados->matricula_id;
             $pagamento->valor = $dados->valor;
@@ -81,68 +143,52 @@ class PagamentoController extends Controller
 
     public function pendentesAction()
     {
-        $hoje = date('Y-m-d');
-
-        $pagamentos = Pagamento::find([
-            'conditions' => 'data_vencimento < :hoje:',
-            'bind' => [
-                'hoje' => $hoje
-            ]
-        ]);
-
-        foreach ($pagamentos as $pagamento) {
-            echo "Matrícula: " . $pagamento->matricula_id .
-                " - Vencimento: " . $pagamento->data_vencimento .
-                " - Situação: Vencida<br>";
-        }
+        $this->mensalidadesPendentesAction();
     }
 
     public function mensalidadesPendentesAction()
     {
-        $matriculas = Matricula::find();
-
-        $hoje = date('Y-m-d');
+        $matriculas = Matricula::find([
+            "conditions" => "status = 'ATIVA'"
+        ]);
 
         foreach ($matriculas as $matricula) {
+            $plano = Plano::findFirst($matricula->plano_id);
 
-            if ($matricula->status != 'ATIVA') {
+            if (!$plano) {
                 continue;
             }
 
-            $plano = Plano::findFirst($matricula->plano_id);
+            $dataInicio = new \DateTime($matricula->data_inicio);
+            $hoje = new \DateTime();
 
-            if ($plano) {
+            $dataFim = !empty($matricula->data_fim)
+                ? new \DateTime($matricula->data_fim)
+                : $hoje;
 
-                $limite = $hoje;
+            while ($dataInicio <= $hoje && $dataInicio <= $dataFim) {
+                $vencimento = $dataInicio->format('Y-m-d');
 
-                if (!empty($matricula->data_fim) && $matricula->data_fim < $limite) {
-                    $limite = $matricula->data_fim;
+                $pagamento = Pagamento::findFirst([
+                    'conditions' => 'matricula_id = :matricula_id: AND data_vencimento = :vencimento:',
+                    'bind' => [
+                        'matricula_id' => $matricula->id,
+                        'vencimento' => $vencimento
+                    ]
+                ]);
+
+                if (!$pagamento) {
+                    $situacao = $vencimento < $hoje->format('Y-m-d')
+                        ? 'Vencida'
+                        : 'Pendente';
+
+                    echo "Matrícula: " . $matricula->id .
+                        " - Vencimento: " . $vencimento .
+                        " - Valor: R$ " . $plano->valor .
+                        " - Situação: " . $situacao . "<br>";
                 }
 
-                $dataVencimento = $matricula->data_inicio;
-
-                while ($dataVencimento <= $limite) {
-
-                    $pagamento = Pagamento::findFirst([
-                        'conditions' => 'matricula_id = :matricula: AND data_vencimento = :vencimento:',
-                        'bind' => [
-                            'matricula' => $matricula->id,
-                            'vencimento' => $dataVencimento
-                        ]
-                    ]);
-
-                    if (!$pagamento) {
-                        echo "Matrícula: " . $matricula->id .
-                            " - Vencimento: " . $dataVencimento .
-                            " - Valor: R$ " . $plano->valor .
-                            " - Situação: Pendente<br>";
-                    }
-
-                    $dataVencimento = date(
-                        'Y-m-d',
-                        strtotime($dataVencimento . ' +1 month')
-                    );
-                }
+                $dataInicio->modify('+1 month');
             }
         }
     }

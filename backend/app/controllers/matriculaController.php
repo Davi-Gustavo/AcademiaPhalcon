@@ -4,6 +4,8 @@ namespace App\Controllers;
 
 use Phalcon\Mvc\Controller;
 use App\Models\Matricula;
+use App\Models\Aluno;
+use App\Models\Plano;
 
 class MatriculaController extends Controller
 {
@@ -11,25 +13,65 @@ class MatriculaController extends Controller
     {
         $matriculas = Matricula::find();
 
+        $lista = [];
+
         foreach ($matriculas as $matricula) {
-            echo "Aluno: " . $matricula->aluno_id .
-                 " - Plano: " . $matricula->plano_id .
-                 " - Início: " . $matricula->data_inicio .
-                 " - Fim: " . $matricula->data_fim .
-                 " - Status: " . $matricula->status . "<br>";
+            $lista[] = [
+                'id' => $matricula->id,
+                'aluno_id' => $matricula->aluno_id,
+                'plano_id' => $matricula->plano_id,
+                'data_inicio' => $matricula->data_inicio,
+                'data_fim' => $matricula->data_fim,
+                'status' => $matricula->status
+            ];
         }
+
+        return $this->response
+            ->setContentType('application/json', 'UTF-8')
+            ->setJsonContent($lista);
     }
 
     public function cadastrarAction()
     {
         $dados = $this->request->getJsonRawBody();
 
+        if (
+            !$dados ||
+            empty($dados->aluno_id) ||
+            empty($dados->plano_id) ||
+            empty($dados->data_inicio)
+        ) {
+            echo "Preencha todos os campos obrigatórios!";
+            return;
+        }
+
+        $aluno = Aluno::findFirst($dados->aluno_id);
+        $plano = Plano::findFirst($dados->plano_id);
+
+        if (!$aluno) {
+            echo "Aluno não encontrado!";
+            return;
+        }
+
+        if (!$plano) {
+            echo "Plano não encontrado!";
+            return;
+        }
+
+        if (
+            !empty($dados->data_fim) &&
+            $dados->data_fim < $dados->data_inicio
+        ) {
+            echo "A data final não pode ser anterior à data inicial!";
+            return;
+        }
+
         $matricula = new Matricula();
 
         $matricula->aluno_id = $dados->aluno_id;
         $matricula->plano_id = $dados->plano_id;
         $matricula->data_inicio = $dados->data_inicio;
-        $matricula->data_fim = $dados->data_fim;
+        $matricula->data_fim = $dados->data_fim ?? null;
         $matricula->status = 'ATIVA';
 
         if ($matricula->save()) {
@@ -46,10 +88,41 @@ class MatriculaController extends Controller
         if ($matricula) {
             $dados = $this->request->getJsonRawBody();
 
+            if (
+                !$dados ||
+                empty($dados->aluno_id) ||
+                empty($dados->plano_id) ||
+                empty($dados->data_inicio)
+            ) {
+                echo "Preencha todos os campos obrigatórios!";
+                return;
+            }
+
+            $aluno = Aluno::findFirst($dados->aluno_id);
+            $plano = Plano::findFirst($dados->plano_id);
+
+            if (!$aluno) {
+                echo "Aluno não encontrado!";
+                return;
+            }
+
+            if (!$plano) {
+                echo "Plano não encontrado!";
+                return;
+            }
+
+            if (
+                !empty($dados->data_fim) &&
+                $dados->data_fim < $dados->data_inicio
+            ) {
+                echo "A data final não pode ser anterior à data inicial!";
+                return;
+            }
+
             $matricula->aluno_id = $dados->aluno_id;
             $matricula->plano_id = $dados->plano_id;
             $matricula->data_inicio = $dados->data_inicio;
-            $matricula->data_fim = $dados->data_fim;
+            $matricula->data_fim = $dados->data_fim ?? null;
 
             if ($matricula->save()) {
                 echo "Matrícula atualizada com sucesso!";
@@ -81,7 +154,6 @@ class MatriculaController extends Controller
         $matricula = Matricula::findFirst($id);
 
         if ($matricula) {
-
             $matricula->status = 'CANCELADA';
 
             if ($matricula->save()) {
@@ -89,7 +161,6 @@ class MatriculaController extends Controller
             } else {
                 echo "Erro ao cancelar matrícula!";
             }
-
         } else {
             echo "Matrícula não encontrada!";
         }
