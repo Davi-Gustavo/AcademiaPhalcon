@@ -159,15 +159,12 @@ class PagamentoController extends Controller
                 continue;
             }
 
-            $pagamentos = Pagamento::find([
+            $quantidadePagamentos = Pagamento::count([
                 "conditions" => "matricula_id = :matricula_id:",
                 "bind" => [
                     "matricula_id" => $matricula->id
-                ],
-                "order" => "data_pagamento ASC, id ASC"
+                ]
             ]);
-
-            $quantidadePagamentos = count($pagamentos);
             $mensalidadeAtual = 0;
 
             $dataInicio = new \DateTime($matricula->data_inicio);
