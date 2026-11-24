@@ -6,6 +6,7 @@ use Phalcon\Mvc\Controller;
 use App\Models\Matricula;
 use App\Models\Aluno;
 use App\Models\Plano;
+use App\Models\Pagamento;
 
 class MatriculaController extends Controller
 {
@@ -138,15 +139,37 @@ class MatriculaController extends Controller
     {
         $matricula = Matricula::findFirst($id);
 
-        if ($matricula) {
-            if ($matricula->delete()) {
-                echo "Matrícula excluída com sucesso!";
-            } else {
-                echo "Erro ao excluir matrícula!";
-            }
-        } else {
+        if (!$matricula) {
             echo "Matrícula não encontrada!";
+            return;
         }
+
+        $pagamentos = Pagamento::find([
+            "conditions" => "matricula_id = :matricula_id:",
+            "bind" => [
+                "matricula_id" => $id
+            ]
+        ]);
+
+        $transacao = $this->db->begin();
+
+        foreach ($pagamentos as $pagamento) {
+            if (!$pagamento->delete()) {
+                $this->db->rollback();
+                echo "Erro ao excluir os pagamentos da matrícula!";
+                return;
+            }
+        }
+
+        if (!$matricula->delete()) {
+            $this->db->rollback();
+            echo "Erro ao excluir matrícula!";
+            return;
+        }
+
+        $this->db->commit();
+
+        echo "Matrícula excluída com sucesso!";
     }
 
     public function cancelarAction($id)

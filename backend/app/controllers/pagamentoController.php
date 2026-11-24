@@ -159,6 +159,17 @@ class PagamentoController extends Controller
                 continue;
             }
 
+            $pagamentos = Pagamento::find([
+                "conditions" => "matricula_id = :matricula_id:",
+                "bind" => [
+                    "matricula_id" => $matricula->id
+                ],
+                "order" => "data_pagamento ASC, id ASC"
+            ]);
+
+            $quantidadePagamentos = count($pagamentos);
+            $mensalidadeAtual = 0;
+
             $dataInicio = new \DateTime($matricula->data_inicio);
             $hoje = new \DateTime();
 
@@ -167,17 +178,11 @@ class PagamentoController extends Controller
                 : $hoje;
 
             while ($dataInicio <= $hoje && $dataInicio <= $dataFim) {
+
                 $vencimento = $dataInicio->format('Y-m-d');
 
-                $pagamento = Pagamento::findFirst([
-                    'conditions' => 'matricula_id = :matricula_id: AND data_vencimento = :vencimento:',
-                    'bind' => [
-                        'matricula_id' => $matricula->id,
-                        'vencimento' => $vencimento
-                    ]
-                ]);
+                if ($mensalidadeAtual >= $quantidadePagamentos) {
 
-                if (!$pagamento) {
                     $situacao = $vencimento < $hoje->format('Y-m-d')
                         ? 'Vencida'
                         : 'Pendente';
@@ -187,6 +192,8 @@ class PagamentoController extends Controller
                         " - Valor: R$ " . $plano->valor .
                         " - Situação: " . $situacao . "<br>";
                 }
+
+                $mensalidadeAtual++;
 
                 $dataInicio->modify('+1 month');
             }

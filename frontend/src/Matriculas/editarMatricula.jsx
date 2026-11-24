@@ -1,11 +1,33 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function EditarMatricula({ matricula, fechar, atualizar }) {
-  const [aluno_id, setAlunoId] = useState(matricula.aluno_id);
-  const [plano_id, setPlanoId] = useState(matricula.plano_id);
+  const [aluno_id, setAlunoId] = useState(String(matricula.aluno_id));
+  const [plano_id, setPlanoId] = useState(String(matricula.plano_id));
   const [data_inicio, setDataInicio] = useState(matricula.data_inicio);
   const [data_fim, setDataFim] = useState(matricula.data_fim || "");
+
+  const [alunos, setAlunos] = useState([]);
+  const [planos, setPlanos] = useState([]);
   const [erro, setErro] = useState("");
+
+  useEffect(() => {
+    async function carregarDados() {
+      try {
+        const respostaAlunos = await fetch("http://localhost:8000/alunos");
+        const respostaPlanos = await fetch("http://localhost:8000/planos");
+
+        const dadosAlunos = await respostaAlunos.json();
+        const dadosPlanos = await respostaPlanos.json();
+
+        setAlunos(dadosAlunos);
+        setPlanos(dadosPlanos);
+      } catch (err) {
+        setErro("Erro ao carregar alunos e planos!");
+      }
+    }
+
+    carregarDados();
+  }, []);
 
   async function editar(e) {
     e.preventDefault();
@@ -18,8 +40,8 @@ function EditarMatricula({ matricula, fechar, atualizar }) {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            aluno_id,
-            plano_id,
+            aluno_id: Number(aluno_id),
+            plano_id: Number(plano_id),
             data_inicio,
             data_fim
           })
@@ -46,25 +68,37 @@ function EditarMatricula({ matricula, fechar, atualizar }) {
       <h2>Editar matrícula</h2>
 
       <div className="campo">
-        <label>ID do aluno</label>
-        <input
-          type="number"
-          min="1"
+        <label>Aluno</label>
+        <select
           value={aluno_id}
           onChange={(e) => setAlunoId(e.target.value)}
           required
-        />
+        >
+          <option value="">Selecione um aluno</option>
+
+          {alunos.map((aluno) => (
+            <option key={aluno.id} value={aluno.id}>
+              {aluno.nome}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="campo">
-        <label>ID do plano</label>
-        <input
-          type="number"
-          min="1"
+        <label>Plano</label>
+        <select
           value={plano_id}
           onChange={(e) => setPlanoId(e.target.value)}
           required
-        />
+        >
+          <option value="">Selecione um plano</option>
+
+          {planos.map((plano) => (
+            <option key={plano.id} value={plano.id}>
+              {plano.nome}
+            </option>
+          ))}
+        </select>
       </div>
 
       <div className="campo">

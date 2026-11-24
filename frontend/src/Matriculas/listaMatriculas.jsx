@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import ExcluirMatricula from "./excluirMatricula";
 
@@ -53,8 +52,8 @@ function ListaMatriculas({ atualizar, editar }) {
       const mensagem = await resposta.text();
       alert(mensagem);
 
-      if (mensagem.toLowerCase().includes("sucesso")) {
-        carregarMatriculas();
+      if (resposta.ok && mensagem.toLowerCase().includes("sucesso")) {
+        await carregarMatriculas();
       }
     } catch (err) {
       console.error(err);
@@ -115,7 +114,7 @@ function ListaMatriculas({ atualizar, editar }) {
 
             <ExcluirMatricula
               matricula={matricula}
-              atualizar={atualizar}
+              atualizar={carregarMatriculas}
             />
           </div>
         );
